@@ -1,6 +1,7 @@
 ![Build Status](https://github.com/OLife97/dhi-caddy-cloudflare/actions/workflows/docker-image.yml/badge.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/OLife97/dhi-caddy-cloudflare)
 ![License](https://img.shields.io/github/license/OLife97/dhi-caddy-cloudflare)
+[![Docker Pull](https://img.shields.io/badge/docker%20pull-ghcr.io%2Folife97%2Fdhi--caddy--cloudflare-blue)](https://github.com/OLife97/dhi-caddy-cloudflare/pkgs/container/dhi-caddy-cloudflare)
 # Hardened Caddy (Cloudflare + GeoIP)
 
 Automated community build of Caddy v2 based on **DHI Hardened Images**.
