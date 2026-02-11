@@ -1,4 +1,5 @@
 ![Build Status](https://github.com/OLife97/dhi-caddy-cloudflare/actions/workflows/docker-image.yml/badge.svg)
+![Architecture](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-blue?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/OLife97/dhi-caddy-cloudflare)
 ![License](https://img.shields.io/github/license/OLife97/dhi-caddy-cloudflare)
 [![Docker Pull](https://img.shields.io/badge/docker%20pull-ghcr.io%2Folife97%2Fdhi--caddy--cloudflare-blue)](https://github.com/OLife97/dhi-caddy-cloudflare/pkgs/container/dhi-caddy-cloudflare)
