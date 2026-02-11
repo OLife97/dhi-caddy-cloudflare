@@ -1,21 +1,50 @@
-ARG BUILDER_IMAGE=dhi.io/golang:1.26-debian12-dev
-ARG RUNTIME_IMAGE=dhi.io/caddy:2
+# --- Stage 1: Builder ---
+FROM golang:1.26 AS builder
 
-FROM ${BUILDER_IMAGE} AS builder
 ENV CGO_ENABLED=0
-
-# Installa xcaddy
-RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
-
 WORKDIR /build
 
-# Prova a compilare sperando che Go 1.26 risolva le dipendenze
-RUN xcaddy build \
-    --with github.com/caddy-dns/cloudflare \
-    --with github.com/porech/caddy-maxmind-geolocation \
-    --with github.com/hslatman/caddy-crowdsec-bouncer
+# main.go: Caddy + plugin
+RUN cat << 'EOF' > main.go
+package main
 
-FROM ${RUNTIME_IMAGE}
+import (
+    caddycmd "github.com/caddyserver/caddy/v2/cmd"
+    _ "github.com/caddyserver/caddy/v2/modules/standard"
+    _ "github.com/caddy-dns/cloudflare"
+    _ "github.com/porech/caddy-maxmind-geolocation"
+    _ "github.com/hslatman/caddy-crowdsec-bouncer"
+)
+
+func main() {
+    caddycmd.Main()
+}
+EOF
+
+RUN go mod init dhi-caddy-cloudflare
+
+# download caddy and modules @latest
+RUN go get \
+    github.com/caddyserver/caddy/v2@latest \
+    github.com/caddy-dns/cloudflare@latest \
+    github.com/porech/caddy-maxmind-geolocation@latest \
+    github.com/hslatman/caddy-crowdsec-bouncer@latest
+
+# FIX CVE: Using nebula v1.9.7
+RUN go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.29.0 \
+    && go mod edit -replace github.com/slackhq/nebula=github.com/slackhq/nebula@v1.9.7 \
+    && go mod edit -replace github.com/expr-lang/expr=github.com/expr-lang/expr@v1.17.7 \
+    && go mod edit -replace github.com/quic-go/quic-go=github.com/quic-go/quic-go@v0.57.0 \
+    && go mod edit -replace github.com/golang-jwt/jwt/v4=github.com/golang-jwt/jwt/v4@v4.5.2 \
+    && go mod edit -replace golang.org/x/crypto=golang.org/x/crypto@v0.47.0 \
+    && go mod edit -replace github.com/go-chi/chi/v5=github.com/go-chi/chi/v5@v5.2.4
+
+RUN go mod tidy
+RUN go build -o /build/caddy main.go
+
+# --- Stage 2: Runtime (DHI Hardened) ---
+FROM dhi.io/caddy:2
+
 COPY --from=builder /build/caddy /usr/local/bin/caddy
 USER 65532:65532
 CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
