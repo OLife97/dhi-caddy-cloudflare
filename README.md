@@ -2,10 +2,10 @@
 ![Last Commit](https://img.shields.io/github/last-commit/OLife97/dhi-caddy-cloudflare)
 ![License](https://img.shields.io/github/license/OLife97/dhi-caddy-cloudflare)
 [![Docker Pull](https://img.shields.io/badge/docker%20pull-ghcr.io%2Folife97%2Fdhi--caddy--cloudflare-blue)](https://github.com/OLife97/dhi-caddy-cloudflare/pkgs/container/dhi-caddy-cloudflare)
-# Hardened Caddy (Cloudflare + GeoIP + Security)
+# Hardened Caddy (Cloudflare + GeoIP + Crowdsec bouncer)
 
 Automated community build of Caddy v2 based on **DHI Hardened Images**.
-Includes essential modules for **DNS validation**, **Geo-blocking**, **CrowdSec integration**, and **Rate Limiting**.
+Includes essential modules for **DNS validation**, **Geo-blocking** and **CrowdSec integration**.
 
 Not affiliated with the official Caddy or DHI projects.
 
@@ -26,7 +26,6 @@ This image is based on **DHI (Docker Hardened Images)**, offering significantly 
 | **Cloudflare DNS** | DNS-01 challenge support for TLS (essential for wildcard certs or internal services). | [Repo](https://github.com/caddy-dns/cloudflare) |
 | **MaxMind GeoIP** | Filter traffic by country (e.g., block CN, RU, etc.). | [Repo](https://github.com/porech/caddy-maxmind-geolocation) |
 | **CrowdSec Bouncer** | Block malicious IPs using CrowdSec's collaborative threat intelligence. | [Repo](https://github.com/hslatman/caddy-crowdsec-bouncer) |
-| **Rate Limit** | Protect services from brute-force and DoS attacks. | [Repo](https://github.com/mholt/caddy-ratelimit) |
 
 *Base image documentation:* [DHI Caddy Guides](https://hub.docker.com/hardened-images/catalog/dhi/caddy/guides)
 
