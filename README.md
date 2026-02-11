@@ -41,3 +41,17 @@ services:
     # Optional: If you need to write to volumes or use UNRAID, ensure permissions are set for uid 65532
     # user: "65532:65532"
 ```
+## Licenses & Acknowledgements
+
+This project builds upon the work of several open-source projects.
+
+*   **Caddy**: Licensed under [Apache 2.0](https://github.com/caddyserver/caddy/blob/master/LICENSE).
+*   **Docker Hardened Images (DHI)**: Base images provided by Docker, Inc. under [Apache 2.0](https://hub.docker.com/hardened-images).
+*   **caddy-dns/cloudflare**: Licensed under [Apache 2.0](https://github.com/caddy-dns/cloudflare/blob/master/LICENSE).
+*   **porech/caddy-maxmind-geolocation**: Licensed under [Apache 2.0](https://github.com/porech/caddy-maxmind-geolocation/blob/master/LICENSE).
+
+This repository itself is licensed under the **Apache 2.0 License**.
+
+**Note on MaxMind GeoIP:**
+This product includes GeoLite2 data created by MaxMind, available from [https://www.maxmind.com](https://www.maxmind.com).
+If you use the GeoIP module, you must comply with the MaxMind End User License Agreement (EULA).
