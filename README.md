@@ -41,12 +41,16 @@ services:
     image: ghcr.io/olife97/dhi-caddy-cloudflare:latest
     container_name: caddy
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - "80:8080"
       - "443:8443"
       - "443:8443/udp" # HTTP/3
     environment:
-      # Pass the variable from your .env file
+      # Always pass the variables from your .env file
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - CROWDSEC_API_KEY=${CROWDSEC_API_KEY} # If using CrowdSec - Requires a running CrowdSec agent (in another container or on host).
     volumes:
