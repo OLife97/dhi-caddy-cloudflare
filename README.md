@@ -39,5 +39,5 @@ services:
       - ./db:/db:ro # path for MaxMind GeoLite2.mmdb file
 
     # Optional: If you need to write to volumes or use UNRAID, ensure permissions are set for uid 65532
-    #user: "65532:65532"
+    # user: "65532:65532"
 ```
