@@ -18,4 +18,4 @@ RUN xcaddy build \
 FROM ${RUNTIME_IMAGE}
 COPY --from=builder /build/caddy /usr/local/bin/caddy
 USER 65532:65532
-CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
