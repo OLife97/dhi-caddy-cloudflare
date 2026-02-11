@@ -20,6 +20,22 @@ This image is based on **DHI (Docker Hardened Images)**, offering significantly 
 *   **Software Bill of Materials (SBOM):** DHI images are strictly monitored for vulnerabilities and dependencies.
 *   **Production Ready:** Designed for environments where security compliance and stability are critical.
 
+To keep the image reasonably safe, I scan it with Docker Scout and other tools, I override a few Go dependencies that were pulling older vulnerable versions via transitive deps.
+
+### Current scan (Feb 2026)
+
+Docker Scout summary:
+- Critical: 0
+- High: 1 (nebula)
+- Unspecified: 1 (go-chi)
+
+Details (from `docker scout cves`):
+- `github.com/slackhq/nebula@1.9.7` → HIGH CVE-2026-25793 (fixed upstream in 1.10.3, but using 1.10.3 currently breaks compatibility in this build)
+- `github.com/go-chi/chi/v5@5.2.3` → GHSA-mqqf-5wvp-8fh8 (fixed in 5.2.4)
+
+Instead of relying on xcaddy, the Dockerfile uses `go mod edit -replace` to force a few libraries to patched versions when possible.
+Verify locally docker scout cves `dhi-caddy-cloudflare:latest`
+
 ## Modules Included
 | Module | Description | Link |
 | :--- | :--- | :--- |
