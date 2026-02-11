@@ -1,18 +1,27 @@
-name: Build Caddy Hardened DHI
+name: Build Hardened Caddy Monthly
 
 on:
-  push:
-    branches: [ "main" ] 
+  # Esegue automaticamente alle 04:00 UTC del primo giorno di ogni mese
   schedule:
-    - cron: '0 0 * * 0' # Scatta ogni domenica a mezzanotte per aggiornamenti di sicurezza
+    - cron: '0 4 1 * *'
+  
+  # Esegue se carichi modifiche al Dockerfile o a questa Action
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/**'
+  
+  # Ti permette di avviarla a mano col pulsante "Run workflow" se serve
   workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
+  # Usa il nome del tuo repository come nome immagine (es. gennaro/caddy-custom)
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -22,46 +31,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Importante: serve per compilare per ARM64 (UGREEN) su server AMD64
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      # Login a DHI.io (Docker Hub) - NECESSARIO per scaricare l'immagine base hardened
+      # Assicurati di aver settato i Secrets: DHI_USERNAME e DHI_PASSWORD
+      - name: Login to Docker Hub (DHI access)
+        uses: docker/login-action@v3
+        with:
+          registry: dhi.io
+          username: ${{ secrets.DHI_USERNAME }}
+          password: ${{ secrets.DHI_PASSWORD }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # Login al registro di GitHub (dove verrà salvata l'immagine)
-      - name: Log in to the Container registry
+      # Login al Container Registry di GitHub - Dove caricheremo la TUA immagine
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log in to DHI Registry
-        uses: docker/login-action@v3
-        with:
-         registry: dhi.io
-         username: ${{ secrets.DHI_USERNAME }}
-         password: ${{ secrets.DHI_PASSWORD }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest
-            type=sha
-
-      - name: Build and push
+      # Compila e Carica l'immagine
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # Costruisce per entrambe le architetture dei tuoi server
-          platforms: linux/amd64,linux/arm64 
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          # Ottimizzazione: usa la cache di GitHub per build ultra-veloci
+          # Taggiamo sia come 'latest' che con la data di build (es. :20260201)
+          # Utile se una build mensile rompe qualcosa e vuoi tornare a quella del mese prima
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.run_id }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
