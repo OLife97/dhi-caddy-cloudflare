@@ -2,17 +2,31 @@
 ![Last Commit](https://img.shields.io/github/last-commit/OLife97/dhi-caddy-cloudflare)
 ![License](https://img.shields.io/github/license/OLife97/dhi-caddy-cloudflare)
 [![Docker Pull](https://img.shields.io/badge/docker%20pull-ghcr.io%2Folife97%2Fdhi--caddy--cloudflare-blue)](https://github.com/OLife97/dhi-caddy-cloudflare/pkgs/container/dhi-caddy-cloudflare)
-# Hardened Caddy (Cloudflare + GeoIP)
+# Hardened Caddy (Cloudflare + GeoIP + Security)
 
 Automated community build of Caddy v2 based on **DHI Hardened Images**.
-Includes `xcaddy` modules for **Cloudflare DNS** validation and **MaxMind GeoIP**.
+Includes essential modules for **DNS validation**, **Geo-blocking**, **CrowdSec integration**, and **Rate Limiting**.
+
 Not affiliated with the official Caddy or DHI projects.
 
 Builds automatically on the 1st of every month to pull the latest upstream Caddy version and Go dependencies.
 
+## Why Hardened?
+
+This image is based on **DHI (Docker Hardened Images)**, offering significantly higher security compared to standard Docker images.
+
+*   **Non-Root by Default:** Runs as user `65532`, preventing potential container breakout attacks from gaining root access to your host.
+*   **Minimal Attack Surface:** Based on a "distroless-like" environment. No shell (`sh`, `bash`), no package managers (`apt`, `apk`), and no unnecessary binaries. Even if an attacker compromises Caddy, they have no tools to expand their foothold.
+*   **Software Bill of Materials (SBOM):** DHI images are strictly monitored for vulnerabilities and dependencies.
+*   **Production Ready:** Designed for environments where security compliance and stability are critical.
+
 ## Modules Included
-*   [`caddy-dns/cloudflare`](https://github.com/caddy-dns/cloudflare) - For DNS-01 challenges and solving TLS behind Cloudflare proxy.
-*   [`porech/caddy-maxmind-geolocation`](https://github.com/porech/caddy-maxmind-geolocation) - For country-based blocking/allowlisting.
+| Module | Description | Link |
+| :--- | :--- | :--- |
+| **Cloudflare DNS** | DNS-01 challenge support for TLS (essential for wildcard certs or internal services). | [Repo](https://github.com/caddy-dns/cloudflare) |
+| **MaxMind GeoIP** | Filter traffic by country (e.g., block CN, RU, etc.). | [Repo](https://github.com/porech/caddy-maxmind-geolocation) |
+| **CrowdSec Bouncer** | Block malicious IPs using CrowdSec's collaborative threat intelligence. | [Repo](https://github.com/hslatman/caddy-crowdsec-bouncer) |
+| **Rate Limit** | Protect services from brute-force and DoS attacks. | [Repo](https://github.com/mholt/caddy-ratelimit) |
 
 *Base image documentation:* [DHI Caddy Guides](https://hub.docker.com/hardened-images/catalog/dhi/caddy/guides)
 
@@ -35,11 +49,12 @@ services:
     environment:
       # Pass the variable from your .env file
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - CROWDSEC_API_KEY=${CROWDSEC_API_KEY} # If using CrowdSec - Requires a running CrowdSec agent (in another container or on host).
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./data:/data
       - ./config:/config
-      - ./db:/db:ro # path for MaxMind GeoLite2.mmdb file
+      - ./GeoLite2-Country.mmdb:/config/GeoLite2-Country.mmdb:ro # path for MaxMind GeoLite2.mmdb file
 
     # Optional: If you need to write to volumes or use UNRAID, ensure permissions are set for uid 65532
     # user: "65532:65532"
