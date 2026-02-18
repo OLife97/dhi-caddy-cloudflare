@@ -14,6 +14,7 @@ import (
     _ "github.com/caddy-dns/cloudflare"
     _ "github.com/porech/caddy-maxmind-geolocation"
     _ "github.com/hslatman/caddy-crowdsec-bouncer"
+    _ "github.com/mholt/caddy-dynamicdns"
 )
 
 func main() {
@@ -28,7 +29,8 @@ RUN go get \
     github.com/caddyserver/caddy/v2@latest \
     github.com/caddy-dns/cloudflare@latest \
     github.com/porech/caddy-maxmind-geolocation@latest \
-    github.com/hslatman/caddy-crowdsec-bouncer@latest
+    github.com/hslatman/caddy-crowdsec-bouncer@latest \
+    github.com/mholt/caddy-dynamicdns@latest
 
 # FIX CVE: Using nebula v1.9.7
 RUN go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.29.0 \

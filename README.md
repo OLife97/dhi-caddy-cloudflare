@@ -1,3 +1,4 @@
+
 ![Build Status](https://github.com/OLife97/dhi-caddy-cloudflare/actions/workflows/docker-image.yml/badge.svg)
 ![Architecture](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-blue?style=flat-square)
 ![Last Commit](https://img.shields.io/github/last-commit/OLife97/dhi-caddy-cloudflare)
@@ -41,6 +42,7 @@ Verify locally docker scout cves `dhi-caddy-cloudflare:latest`
 | Module | Description | Link |
 | :--- | :--- | :--- |
 | **Cloudflare DNS** | DNS-01 challenge support for TLS (essential for wildcard certs or internal services). | [Repo](https://github.com/caddy-dns/cloudflare) |
+| **Dynamic DNS** | Automatic DNS A record updater. | [Repo](https://github.com/mholt/caddy-dynamicdns) |
 | **MaxMind GeoIP** | Filter traffic by country (e.g., block CN, RU, etc.). | [Repo](https://github.com/porech/caddy-maxmind-geolocation) |
 | **CrowdSec Bouncer** | Block malicious IPs using CrowdSec's collaborative threat intelligence. | [Repo](https://github.com/hslatman/caddy-crowdsec-bouncer) |
 
@@ -51,6 +53,7 @@ Verify locally docker scout cves `dhi-caddy-cloudflare:latest`
 ### Docker Compose
 **Note:** Since this is based on DHI hardened images, it runs as non-root user `65532`. You cannot bind to ports `< 1024` inside the container. Map external 80/443 to internal **8080/8443**.
 It is highly recommended to use an `.env` file for your Cloudflare API token instead of hardcoding it in the compose file.
+If you need to write to volumes or use UNRAID with bind, ensure permissions are set for uid 65532
 
 ```yaml
 services:
@@ -58,10 +61,8 @@ services:
     image: ghcr.io/olife97/dhi-caddy-cloudflare:latest
     container_name: caddy
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    security_opt: { no-new-privileges:true }
+    cap_drop: { ALL }
     ports:
       - "80:8080"
       - "443:8443"
@@ -75,18 +76,17 @@ services:
       - ./data:/data
       - ./config:/config
       - ./GeoLite2-Country.mmdb:/config/GeoLite2-Country.mmdb:ro # path for MaxMind GeoLite2.mmdb file
-
-    # Optional: If you need to write to volumes or use UNRAID, ensure permissions are set for uid 65532
-    # user: "65532:65532"
 ```
 ## Licenses & Acknowledgements
 
 This project builds upon the work of several open-source projects.
 
 *   **Caddy**: Licensed under [Apache 2.0](https://github.com/caddyserver/caddy/blob/master/LICENSE).
-*   **Docker Hardened Images (DHI)**: Base images provided by Docker, Inc. under [Apache 2.0](https://hub.docker.com/hardened-images).
+*   **Docker Hardened Images (DHI)**: Base images provided by Docker, Inc. under [Apache 2.0](https://www.docker.com/press-release/docker-makes-hardened-images-free-open-and-transparent-for-everyone).
 *   **caddy-dns/cloudflare**: Licensed under [Apache 2.0](https://github.com/caddy-dns/cloudflare/blob/master/LICENSE).
+*  **mholt/caddy-dynamicdns**: Licensed under [Apache 2.0](https://github.com/mholt/caddy-dynamicdns/blob/master/LICENSE).
 *   **porech/caddy-maxmind-geolocation**: Licensed under [Apache 2.0](https://github.com/porech/caddy-maxmind-geolocation/blob/master/LICENSE).
+*  **hslatman/caddy-crowdsec-bouncer**: Licensed under [Apache 2.0](https://github.com/hslatman/caddy-crowdsec-bouncer/blob/main/LICENSE).
 
 This repository itself is licensed under the **Apache 2.0 License**.
 
