@@ -61,8 +61,10 @@ services:
     image: ghcr.io/olife97/dhi-caddy-cloudflare:latest
     container_name: caddy
     restart: unless-stopped
-    security_opt: { no-new-privileges:true }
-    cap_drop: { ALL }
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - "80:8080"
       - "443:8443"
