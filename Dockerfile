@@ -44,13 +44,17 @@ RUN go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/
 RUN go mod tidy
 RUN go build -o /build/caddy main.go
 
+RUN mkdir -p /target_fs/var/log/caddy \
+             /target_fs/data \
+             /target_fs/config \
+             /target_fs/etc/caddy \
+    && chown -R 65532:65532 /target_fs
+    
 # --- Stage 2: Runtime (DHI Hardened) ---
 FROM dhi.io/caddy:2
-
+COPY --chown=65532:65532 --from=builder /target_fs /
 COPY --from=builder /build/caddy /usr/local/bin/caddy
-USER root
-RUN mkdir -p /var/log/caddy /data /config /etc/caddy
-RUN chown -R 65532:65532 /var/log/caddy /data /config /etc/caddy
+
 VOLUME ["/var/log/caddy", "/data", "/config"]
 USER 65532:65532
 
