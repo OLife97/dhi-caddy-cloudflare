@@ -14,9 +14,14 @@ services:
     environment:
       # Always pass the variables from your .env file
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
-      - CROWDSEC_API_KEY=${CROWDSEC_API_KEY} # If using CrowdSec - Requires a running CrowdSec agent (in another container or on host).
+      # If using CrowdSec - Requires a running CrowdSec agent (in another container or on host).
+      - CROWDSEC_API_KEY=${CROWDSEC_API_KEY}
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./data:/data
-      - ./config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro # Path to Caddyfile
       - ./GeoLite2-Country.mmdb:/config/GeoLite2-Country.mmdb:ro # path for MaxMind GeoLite2.mmdb file
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
