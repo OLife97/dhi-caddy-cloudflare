@@ -1,0 +1,11 @@
+.DS_Store
+Desktop.ini
+# Thumbnail cache files
+._*
+Thumbs.db
+.Spotlight-V100
+.Trashes
+*.pyc
+*.out
+.vscode
+Caddyfile
