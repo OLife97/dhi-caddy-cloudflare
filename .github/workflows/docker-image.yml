@@ -2,7 +2,7 @@ name: Build Hardened Caddy
 
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: '0 4 * * 1' 
   push:
     branches: ["main"]
     paths:
@@ -12,7 +12,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -29,6 +28,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Convert repository name to lowercase
+        run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Get latest Caddy version
         id: get_version
         run: |
@@ -37,7 +39,7 @@ jobs:
             https://api.github.com/repos/caddyserver/caddy/releases/latest | jq -r ".tag_name" | sed 's/^v//')
           
           if [[ -z "$LATEST_VER" || "$LATEST_VER" == "null" ]]; then
-            echo "ERROR: Failed to fetch Caddy version"
+            echo "ERROR: Failed to fetch Caddy version from GitHub API"
             exit 1
           fi
           echo "Found version: $LATEST_VER"
@@ -67,7 +69,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.REPO_LC }}
           tags: |
             type=raw,value=latest
             type=raw,value=${{ steps.get_version.outputs.version }}
@@ -93,7 +95,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-name: ${{ env.REGISTRY }}/${{ env.REPO_LC }}
           subject-digest: ${{ steps.build_push.outputs.digest }}
           push-to-registry: true
 
@@ -101,7 +103,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: aquasecurity/trivy-action@0.32.0
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.REPO_LC }}:${{ steps.get_version.outputs.version }}
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
