@@ -22,21 +22,22 @@ This image is based on **DHI (Docker Hardened Images)**, offering significantly 
 *   **Software Bill of Materials (SBOM):** DHI images are strictly monitored for vulnerabilities and dependencies.
 *   **Production Ready:** Designed for environments where security compliance and stability are critical.
 
-To keep the image reasonably safe, I scan it with Docker Scout and other tools, I override a few Go dependencies that were pulling older vulnerable versions via transitive deps.
-
-### Current scan (Feb 2026)
-
-Docker Scout summary:
-- Critical: 0
-- High: 1 (nebula)
-- Unspecified: 1 (go-chi)
-
-Details (from `docker scout cves`):
-- `github.com/slackhq/nebula@1.9.7` → HIGH CVE-2026-25793 (fixed upstream in 1.10.3, but using 1.10.3 currently breaks compatibility in this build)
-- `github.com/go-chi/chi/v5@5.2.3` → GHSA-mqqf-5wvp-8fh8 (fixed in 5.2.4)
-
 Instead of relying on xcaddy, the Dockerfile uses `go mod edit -replace` to force a few libraries to patched versions when possible.
-Verify locally docker scout cves `dhi-caddy-cloudflare:latest`
+
+To keep the image reasonably safe, I build the image locally, scan it with trivy and other tools, then update the Dockerfile on the repo.
+I override a few Go dependencies that were pulling older vulnerable versions via transitive deps.
+
+### Automated Scans
+This repository runs automated vulnerability scans using [Trivy](https://github.com/aquasecurity/trivy) via GitHub Actions. 
+You can always check the latest public reports and verify the security posture by visiting the **[Security -> Code scanning alerts](https://github.com/OLife97/dhi-caddy-cloudflare/security/code-scanning)** tab of this repository.
+
+### Scan it Yourself (Local Verification)
+Don't trust, verify! If you want to run a security scan locally on your own machine before deploying the container, you can use any standard OCI vulnerability scanner.
+
+**Using Trivy:**
+```bash
+trivy -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ghcr.io/olife97/dhi-caddy-cloudflare:latest
+```
 
 ## Modules Included
 | Module | Description | Link |
