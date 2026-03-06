@@ -32,15 +32,15 @@ RUN go get \
     github.com/hslatman/caddy-crowdsec-bouncer@latest \
     github.com/mholt/caddy-dynamicdns@latest
 
-# Upgrade dependencies with fix for CVE-2026-26958
-RUN go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.30.0-rc2.0.20260211214201-20608299c29c \
-    && go mod edit -replace github.com/slackhq/nebula=github.com/slackhq/nebula@v1.10.3 \
-    && go mod edit -replace github.com/expr-lang/expr=github.com/expr-lang/expr@v1.17.7 \
-    && go mod edit -replace github.com/quic-go/quic-go=github.com/quic-go/quic-go@v0.59.0 \
-    && go mod edit -replace github.com/golang-jwt/jwt/v4=github.com/golang-jwt/jwt/v4@v4.5.2 \
-    && go mod edit -replace golang.org/x/crypto=golang.org/x/crypto@v0.48.0 \
-    && go mod edit -replace github.com/go-chi/chi/v5=github.com/go-chi/chi/v5@v5.2.5 \
-    && go mod edit -replace filippo.io/edwards25519=filippo.io/edwards25519@v1.1.1
+# Disabled upgrade dependencies, keeped for reference. --- IGNORE ---
+# RUN go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.30.0-rc2.0.20260211214201-20608299c29c \
+#     && go mod edit -replace github.com/slackhq/nebula=github.com/slackhq/nebula@v1.10.3 \
+#     && go mod edit -replace github.com/expr-lang/expr=github.com/expr-lang/expr@v1.17.7 \
+#     && go mod edit -replace github.com/quic-go/quic-go=github.com/quic-go/quic-go@v0.59.0 \
+#     && go mod edit -replace github.com/golang-jwt/jwt/v4=github.com/golang-jwt/jwt/v4@v4.5.2 \
+#     && go mod edit -replace golang.org/x/crypto=golang.org/x/crypto@v0.48.0 \
+#     && go mod edit -replace github.com/go-chi/chi/v5=github.com/go-chi/chi/v5@v5.2.5 \
+#     && go mod edit -replace filippo.io/edwards25519=filippo.io/edwards25519@v1.1.1
 
 RUN go mod tidy
 RUN go build -o /build/caddy main.go
