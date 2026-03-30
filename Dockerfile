@@ -32,13 +32,9 @@ RUN go get \
     github.com/hslatman/caddy-crowdsec-bouncer@latest \
     github.com/mholt/caddy-dynamicdns@latest
 
-# Disabled upgrade dependencies, keeped for reference. --- IGNORE ---
- RUN go mod edit -replace github.com/golang-jwt/jwt/v4=github.com/golang-jwt/jwt/v4@v4.5.2 \
-#     && go mod edit -replace github.com/slackhq/nebula=github.com/slackhq/nebula@v1.10.3 \
-     && go mod edit -replace github.com/expr-lang/expr=github.com/expr-lang/expr@v1.17.8
-#     && go mod edit -replace github.com/quic-go/quic-go=github.com/quic-go/quic-go@v0.59.0 \
-#     && go mod edit -replace  \
-#     && go mod edit -replace golang.org/x/crypto=golang.org/x/crypto@v0.48.0 \
+# FIX FOR CVE-2026-33186 and CVE-2026-30836 , disabled some replace dependencies, keeped for reference. 
+ RUN go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.79.3 \
+     && go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.30.0
 #     && go mod edit -replace github.com/go-chi/chi/v5=github.com/go-chi/chi/v5@v5.2.5 \
 #     && go mod edit -replace filippo.io/edwards25519=filippo.io/edwards25519@v1.1.1
 
