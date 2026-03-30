@@ -35,8 +35,7 @@ RUN go get \
 # FIX FOR CVE-2026-33186 and CVE-2026-30836 , disabled some replace dependencies, keeped for reference. 
  RUN go mod edit -replace google.golang.org/grpc=google.golang.org/grpc@v1.79.3 \
      && go mod edit -replace github.com/smallstep/certificates=github.com/smallstep/certificates@v0.30.0
-#     && go mod edit -replace github.com/go-chi/chi/v5=github.com/go-chi/chi/v5@v5.2.5 \
-#     && go mod edit -replace filippo.io/edwards25519=filippo.io/edwards25519@v1.1.1
+#     && go mod edit -replace
 
 RUN go mod tidy
 RUN go build -o /build/caddy main.go
